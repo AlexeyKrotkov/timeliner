@@ -31,7 +31,7 @@ export class Timeliner {
     setKeyframeStyles(this.node, nextStylesToRender);
   }
 
-  draw(progress) {
+  draw = (progress) => {
     const curProgress = progress * 100;
     const nearestFrameIndex = findNearestFrame(this.keyframesTimeline, curProgress);
     const leftFrame = this.keyframes[nearestFrameIndex];
