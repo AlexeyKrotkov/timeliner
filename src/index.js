@@ -1,17 +1,29 @@
 import { Timeliner } from 'modules/timeliner';
 import { SmoothFrameInterpolator } from 'modules/smooth-frame-interpolator';
 import { getDocumentScrollHeight } from 'utils/scroll';
+import { polynomialInterpolation } from 'utils/interpolations';
 import './styles.scss';
 
-const node = document.getElementById('experimental');
-const keyFrames = [
-  { progress: 0, x: 0, y: 0 },
-  { progress: 30, x: 100, y: 200 },
-  { progress: 60, x: 500, y: 500 },
-  { progress: 100, x: 600, y: 100 }
-];
+const interpolateWithProgress = (keyframesXY, min, max) => {
+  const f = polynomialInterpolation(keyframesXY);
+  const result = [];
+  for (let x = min; x <= max; x += 1) {
+    result.push({ progress: (x / max) * 100, x, y: f(x) });
+  }
+  return result;
+};
 
-const timeLiner = new Timeliner(node, keyFrames);
+const node = document.getElementById('experimental');
+const timeLiner = new Timeliner(
+  node,
+  interpolateWithProgress([
+    [0, 0],
+    [100, 200],
+    [500, 300],
+    [600, 100],
+    [800, 200]
+  ], 0, 800),
+);
 const smoothFrame = new SmoothFrameInterpolator(timeLiner.draw);
 
 window.addEventListener('scroll', () => {
