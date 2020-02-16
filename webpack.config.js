@@ -1,4 +1,5 @@
 const path = require('path');
+const postcssPresetEnv = require('postcss-preset-env');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CircularDependencyPlugin = require('circular-dependency-plugin');
@@ -48,8 +49,34 @@ module.exports = (env, argv) => ({
         ],
       },
       {
-        test: /\.s?css$/,
-        use: ['style-loader', 'css-loader', 'sass-loader'],
+        test: /\.p?css$/,
+        use: [
+          !isProduction ? 'style-loader' : MiniCssExtractPlugin.loader,
+          {
+            loader: 'css-loader',
+            options: {
+              importLoaders: 1,
+              modules: {
+                mode: 'local',
+                localIdentName: '[folder]--[hash:base64:5]'
+              },
+            },
+          },
+          {
+            loader: 'postcss-loader',
+            options: {
+              ident: 'postcss',
+              plugins: () => [
+                postcssPresetEnv({
+                  stage: 3,
+                  features: {
+                    'color-mod-function': { unresolved: 'warn' },
+                  },
+                }),
+              ],
+            },
+          },
+        ],
       },
     ],
   },

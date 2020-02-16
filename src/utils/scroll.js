@@ -4,3 +4,9 @@ export const getDocumentScrollHeight = () => Math.max(
   document.body.offsetHeight, document.documentElement.offsetHeight,
   document.body.clientHeight, document.documentElement.clientHeight
 );
+
+export const getDocumentScrollWidth = () => Math.max(
+  document.body.scrollWidth, document.documentElement.scrollWidth,
+  document.body.offsetWidth, document.documentElement.offsetWidth,
+  document.body.clientWidth, document.documentElement.clientWidth
+);
