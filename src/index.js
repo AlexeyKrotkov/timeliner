@@ -6,6 +6,4 @@ const rootNode = document.getElementById('root');
 
 rootNode.outerHTML = new App().render();
 
-const appNode = document.getElementById('app');
-
-new ScrollHorizontalController(appNode);
+new ScrollHorizontalController();

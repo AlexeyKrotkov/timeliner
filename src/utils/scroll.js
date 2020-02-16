@@ -10,3 +10,11 @@ export const getDocumentScrollWidth = () => Math.max(
   document.body.offsetWidth, document.documentElement.offsetWidth,
   document.body.clientWidth, document.documentElement.clientWidth
 );
+
+export const getDocumentMinScrollWidth = () => Math.min(
+  document.body.scrollWidth, document.documentElement.scrollWidth,
+  document.body.offsetWidth, document.documentElement.offsetWidth,
+  document.body.clientWidth, document.documentElement.clientWidth
+);
+
+export const getMaxScrollX = () => getDocumentScrollWidth() - getDocumentMinScrollWidth();
