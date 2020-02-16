@@ -13,6 +13,8 @@ export class ScrollHorizontalController {
     this.interpolator = new SmoothFrameInterpolator(this.scrollToProgress, {
       minDistance: 0.1,
     });
+    // scroll event subscribers callbacks
+    this.subscribers = {};
   }
 
   setSyncedScrollPosition = pos => (this.syncedScrollPosition = pos);
@@ -22,6 +24,8 @@ export class ScrollHorizontalController {
   };
 
   scrollToProgress = progress => {
+    let isContinue = true;
+
     // soft animate to target point
     window.scrollTo(progress * getMaxScrollX(), 0);
 
@@ -29,14 +33,20 @@ export class ScrollHorizontalController {
     if (progress <= MIN_PROGRESS) {
       this.setSyncedScrollPosition(0);
       this.interpolator.syncProgress(MIN_PROGRESS);
-      return false;
+      isContinue = false;
     }
     if (progress >= MAX_PROGRESS) {
       this.setSyncedScrollPosition(getMaxScrollX());
       this.interpolator.syncProgress(MAX_PROGRESS);
-      return false;
+      isContinue = false;
     }
-    return true;
+
+    // call all listeners
+    Object.getOwnPropertySymbols(this.subscribers).forEach(subscriber => {
+      this.subscribers[subscriber](window.scrollX, this.getSyncedProgress());
+    });
+
+    return isContinue;
   };
 
   handleWheel = event => {
@@ -89,5 +99,12 @@ export class ScrollHorizontalController {
 
   destroy = () => {
     this.removeListeners();
+  };
+
+  subscribe = (key, callback) => {
+    this.subscribers[key] = callback;
+  };
+  unsubscribe = (key) => {
+    delete this.subscribers[key];
   }
 }

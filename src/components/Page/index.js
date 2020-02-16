@@ -1,43 +1,34 @@
 import classNames from 'classnames/bind';
 import styles from './styles.pcss';
 import { ElementNode } from 'dom/ElementNode';
-import { Timeliner } from 'modules/Timeliner';
-import { getMaxScrollX, getViewPortHeight } from 'utils/dom';
-import { SmoothFrameInterpolator } from 'modules/SmoothFrameInterpolator';
+import { getViewPortHeight } from 'utils/dom';
 import mountaints from 'images/mountaints.png';
+import { SectionProgressController } from 'modules/SectionProgressController';
+import { InterpolatedTimeline } from 'modules/InterpolatedTimeline';
 
 const cx = classNames.bind(styles);
 
 export class Page extends ElementNode {
   constructor(props) {
     super(props);
-    this.timeliner = null;
-    this.interpolator = null;
   }
 
   onRender = () => {
-    const node = document.getElementById('bg-design');
-    console.log(getViewPortHeight());
-    this.timeliner = new Timeliner(node, [
+    const bgNode = document.getElementById('bg-design');
+    const sectionNode = document.getElementById('section-first');
+
+    this.timeline = new InterpolatedTimeline(bgNode, [
       { y: 0, progress: 0 },
       { y: getViewPortHeight(), progress: 100 },
     ]);
 
-    this.interpolator = new SmoothFrameInterpolator(this.handleScroll);
-
-    window.addEventListener('scroll', () => {
-      this.interpolator.executeFrame(window.scrollX / getMaxScrollX() * 3);
-    });
-  };
-
-  handleScroll = (progress) => {
-    this.timeliner.draw(progress);
+    new SectionProgressController(sectionNode, this.timeline.drawFrame);
   };
 
   render() {
     requestAnimationFrame(this.onRender);
     return `
-            <div class="${cx('component')}">
+            <div id="section-first" class="${cx('component')}">
                 <div class="${cx('slide', 'first')}">
                     <img src="${mountaints}" id="bg-design" class="${cx('bg-design')}" />
                 </div>
