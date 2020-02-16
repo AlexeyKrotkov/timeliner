@@ -1,6 +1,6 @@
 import classNames from 'classnames/bind';
 import styles from './styles.pcss';
-import { ElementNode } from 'dom/ElementNode';
+import { ElementNode } from 'helpers/ElementNode';
 import { Page } from 'components/Page';
 
 const cx = classNames.bind(styles);

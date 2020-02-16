@@ -1,11 +1,13 @@
 import { SmoothFrameInterpolator } from 'modules/SmoothFrameInterpolator';
 import { getMaxScrollX } from 'utils/dom';
+import { Subscribe } from 'helpers/Subcribe';
 
 const MAX_PROGRESS = 1;
 const MIN_PROGRESS = 0;
 
-export class ScrollHorizontalController {
+export class ScrollHorizontalController extends Subscribe {
   constructor() {
+    super();
     // node that will assumed as maximum scroll width
     this.syncedScrollPosition = 0;
     // to correct dragging scroll via scrollBar
@@ -13,8 +15,6 @@ export class ScrollHorizontalController {
     this.interpolator = new SmoothFrameInterpolator(this.scrollToProgress, {
       minDistance: 0.1,
     });
-    // scroll event subscribers callbacks
-    this.subscribers = {};
   }
 
   setSyncedScrollPosition = pos => (this.syncedScrollPosition = pos);
@@ -41,10 +41,8 @@ export class ScrollHorizontalController {
       isContinue = false;
     }
 
-    // call all listeners
-    Object.getOwnPropertySymbols(this.subscribers).forEach(subscriber => {
-      this.subscribers[subscriber](window.scrollX, this.getSyncedProgress());
-    });
+    // call all subscribers
+    this.callSubscribers(window.scrollX, this.getSyncedProgress());
 
     return isContinue;
   };
@@ -62,6 +60,7 @@ export class ScrollHorizontalController {
     if (this.isScrollBarDragging) {
       this.setSyncedScrollPosition(window.scrollX);
       this.interpolator.syncProgress(this.getSyncedProgress());
+      this.callSubscribers(window.scrollX, this.getSyncedProgress());
     }
   };
 
@@ -100,11 +99,4 @@ export class ScrollHorizontalController {
   destroy = () => {
     this.removeListeners();
   };
-
-  subscribe = (key, callback) => {
-    this.subscribers[key] = callback;
-  };
-  unsubscribe = (key) => {
-    delete this.subscribers[key];
-  }
 }

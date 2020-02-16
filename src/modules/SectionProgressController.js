@@ -1,16 +1,16 @@
 import { scrollController } from 'services/scroll-controller';
+import { Subscribe } from 'helpers/Subcribe';
 
 
-export class SectionProgressController {
-  constructor(sectionNode, drawFrame) {
+export class SectionProgressController extends Subscribe {
+  constructor(sectionNode) {
+    super();
     this.sectionNode = sectionNode;
     this.hasListener = false;
     this.observer = null;
-    this.uniqSectionKey = Symbol(`section-${sectionNode.id}`);
+
     // cached values
     this.cahcedPosition = null;
-    // executors
-    this.drawFrame = drawFrame;
 
     this.initInViewPortObserver();
   }
@@ -21,7 +21,8 @@ export class SectionProgressController {
       const {width, right } = this.sectionNode.getBoundingClientRect();
       // calculate section completed progress in viewport
       const sectionProgress = 1 - right / width;
-      this.drawFrame(sectionProgress);
+
+      this.callSubscribers(sectionProgress);
     }
   };
 
@@ -43,14 +44,13 @@ export class SectionProgressController {
 
   addListener = () => {
     this.hasListener = true;
-    scrollController.subscribe(this.uniqSectionKey, this.drawChangedFrame);
+    scrollController.subscribe('drawChangedFrame', this.drawChangedFrame);
   };
 
   removeListener = () => {
     this.hasListener = false;
-    scrollController.unsubscribe(this.uniqSectionKey, this.drawChangedFrame);
+    scrollController.unsubscribe('drawChangedFrame', this.drawChangedFrame);
   };
-
 
   destroy = () => {
     this.removeListener();

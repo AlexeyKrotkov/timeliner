@@ -1,8 +1,10 @@
 import classNames from 'classnames/bind';
 import styles from './styles.pcss';
-import { ElementNode } from 'dom/ElementNode';
+import { ElementNode } from 'helpers/ElementNode';
 import { getViewPortHeight } from 'utils/dom';
 import mountaints from 'images/mountaints.png';
+import sky from 'images/sky.jpg';
+import fog from 'images/fog.png';
 import { SectionProgressController } from 'modules/SectionProgressController';
 import { InterpolatedTimeline } from 'modules/InterpolatedTimeline';
 
@@ -14,26 +16,44 @@ export class Page extends ElementNode {
   }
 
   onRender = () => {
-    const bgNode = document.getElementById('bg-design');
-    const sectionNode = document.getElementById('section-first');
+    const bgMountainsNode = document.getElementById('bg-mountains');
+    const bgSkyNode = document.getElementById('bg-sky');
+    const bgFogNode = document.getElementById('bg-fog');
+    const sectionNode = document.getElementById('section-intro');
 
-    this.timeline = new InterpolatedTimeline(bgNode, [
-      { y: 0, progress: 0 },
-      { y: getViewPortHeight(), progress: 100 },
+    this.timelineOne = new InterpolatedTimeline(bgMountainsNode, [
+      { y: 0, progress: -40, scale: 1 },
+      { y: getViewPortHeight() / 2, scale: 1.2, progress: 100 },
     ]);
 
-    new SectionProgressController(sectionNode, this.timeline.drawFrame);
+    this.timelineTwo = new InterpolatedTimeline(bgSkyNode, [
+      { x: 0, scale: 1.5, progress: 0 },
+      { x: -500, scale: 1.5, progress: 100 },
+    ]);
+
+    this.timelineThree = new InterpolatedTimeline(bgFogNode, [
+      { x: 0, scale: 2, progress: 0 },
+      { x: 3000, scale: 2, progress: 100 },
+    ]);
+
+    const sectionController = new SectionProgressController(sectionNode);
+    sectionController.subscribe('timelineOne', this.timelineOne.drawFrame);
+    sectionController.subscribe('timelineTwo', this.timelineTwo.drawFrame);
+    sectionController.subscribe('timelineThree', this.timelineTwo.drawFrame);
   };
 
   render() {
     requestAnimationFrame(this.onRender);
     return `
-            <div id="section-first" class="${cx('component')}">
-                <div class="${cx('slide', 'first')}">
-                    <img src="${mountaints}" id="bg-design" class="${cx('bg-design')}" />
-                </div>
-                <div class="${cx('slide', 'second')}"></div>
-                <div class="${cx('slide', 'third')}"></div>
+            <div class="${cx('component')}">
+             <section class="${cx('slide', 'zero')}"></section>
+                <section id="section-intro" class="${cx('slide', 'first')}">
+                    <img src="${mountaints}" id="bg-mountains" class="${cx('bg-mountains')}" />
+                    <img src="${sky}" id="bg-sky" class="${cx('bg-sky')}" />
+                    <img src="${fog}" id="bg-fog" class="${cx('bg-fog')}" />
+                </section>
+                <section class="${cx('slide', 'second')}"></section>
+                <section class="${cx('slide', 'third')}"></section>
             <div/>
           `;
   }
