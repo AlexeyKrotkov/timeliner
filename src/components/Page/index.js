@@ -22,8 +22,8 @@ export class Page extends ElementNode {
     const sectionNode = document.getElementById('section-intro');
 
     this.timelineOne = new InterpolatedTimeline(bgMountainsNode, [
-      { y: 0, progress: -40, scale: 1 },
-      { y: getViewPortHeight() / 2, scale: 1.2, progress: 100 },
+      { y: 0, progress: -40, scale: 1, brightness: 100 },
+      { y: getViewPortHeight() / 2, scale: 1.2, progress: 100, brightness: 20 },
     ]);
 
     this.timelineTwo = new InterpolatedTimeline(bgSkyNode, [
