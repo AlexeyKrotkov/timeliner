@@ -17,4 +17,7 @@ export const getDocumentMinScrollWidth = () => Math.min(
   document.body.clientWidth, document.documentElement.clientWidth
 );
 
+export const getViewPortWidth = () => Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+export const getViewPortHeight = () => Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+
 export const getMaxScrollX = () => getDocumentScrollWidth() - getDocumentMinScrollWidth();

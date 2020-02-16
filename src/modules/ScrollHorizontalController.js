@@ -1,5 +1,5 @@
 import { SmoothFrameInterpolator } from 'modules/SmoothFrameInterpolator';
-import { getMaxScrollX } from 'utils/scroll';
+import { getMaxScrollX } from 'utils/dom';
 
 const MAX_PROGRESS = 1;
 const MIN_PROGRESS = 0;

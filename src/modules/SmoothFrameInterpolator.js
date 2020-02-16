@@ -24,7 +24,7 @@ export class SmoothFrameInterpolator {
 
     // TODO make timer ~500ms if distance > this.minDistance (if we are stayed for this time in this condition)
     // if (distance > this.minDistance) {
-    if (isContinue) {
+    if (isContinue === undefined || isContinue) {
       this.rafId = requestAnimationFrame(this.run);
     }
     // }
