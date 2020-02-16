@@ -10,11 +10,12 @@ export class ScrollHorizontalController {
     this.syncedScrollPosition = 0;
     // to correct dragging scroll via scrollBar
     this.isScrollBarDragging = false;
-    this.interpolator = new SmoothFrameInterpolator(this.scrollToProgress, { minDistance: 0.1 });
-    this.initListeners();
+    this.interpolator = new SmoothFrameInterpolator(this.scrollToProgress, {
+      minDistance: 0.1,
+    });
   }
 
-  setSyncedScrollPosition = (pos) => this.syncedScrollPosition = pos;
+  setSyncedScrollPosition = pos => (this.syncedScrollPosition = pos);
 
   getSyncedProgress = () => {
     return this.syncedScrollPosition / getMaxScrollX();
@@ -38,32 +39,55 @@ export class ScrollHorizontalController {
     return true;
   };
 
-  initListeners = () => {
-    window.addEventListener('mousedown', event => {
-      if (event.target.tagName === 'HTML' || event.target.nodeName === '#document' /* edge */) {
-        this.isScrollBarDragging = true;
-        this.interpolator.reset();
-      }
-    });
-    window.addEventListener('mouseup', () => {
-      this.isScrollBarDragging = false;
-      this.scrollToProgress(this.getSyncedProgress());
-    });
-
-    window.addEventListener('scroll', (e) => {
-      if (this.isScrollBarDragging) {
-        this.setSyncedScrollPosition(window.scrollX);
-        this.interpolator.syncProgress(this.getSyncedProgress());
-      }
-    });
-
-    window.addEventListener('wheel', event => {
-      if (!this.isScrollBarDragging) {
-        this.setSyncedScrollPosition(this.syncedScrollPosition + event.deltaY * 2);
-        requestAnimationFrame(() => {
-          this.interpolator.executeFrame(this.getSyncedProgress());
-        });
-      }
-    });
+  handleWheel = event => {
+    if (!this.isScrollBarDragging) {
+      this.setSyncedScrollPosition(this.syncedScrollPosition + Math.sign(event.deltaY) * 200);
+      requestAnimationFrame(() => {
+        this.interpolator.executeFrame(this.getSyncedProgress());
+      });
+    }
   };
+
+  handleScroll = () => {
+    if (this.isScrollBarDragging) {
+      this.setSyncedScrollPosition(window.scrollX);
+      this.interpolator.syncProgress(this.getSyncedProgress());
+    }
+  };
+
+  handleMouseDown = event => {
+    if (event.target.tagName === 'HTML' || event.target.nodeName === '#document' /* edge */) {
+      this.isScrollBarDragging = true;
+      this.interpolator.reset();
+    }
+  };
+
+  handleMouseUp = () => {
+    this.isScrollBarDragging = false;
+    this.scrollToProgress(this.getSyncedProgress());
+  };
+
+  initListeners = () => {
+    window.addEventListener('mousedown', this.handleMouseDown);
+    window.addEventListener('mouseup', this.handleMouseUp);
+    window.addEventListener('scroll', this.handleScroll);
+    window.addEventListener('wheel', this.handleWheel);
+  };
+
+  removeListeners = () => {
+    window.removeEventListener('mousedown', this.handleMouseDown);
+    window.removeEventListener('mouseup', this.handleMouseUp);
+    window.removeEventListener('scroll', this.handleScroll);
+    window.removeEventListener('wheel', this.handleWheel);
+  };
+
+  init = () => {
+    this.setSyncedScrollPosition(window.scrollX);
+    this.handleWheel({ deltaY: 0 });
+    this.initListeners();
+  };
+
+  destroy = () => {
+    this.removeListeners();
+  }
 }
