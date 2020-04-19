@@ -13,15 +13,6 @@ export class InterpolatedTimeline {
     this.interpolator.drawExecutor(progress);
   };
 
-  drawFrameIfProgressPositive = progress => {
-    if (progress <= ZERO_PROGRESS) {
-      this.drawFrame(ZERO_PROGRESS);
-    }
-    if (progress > ZERO_PROGRESS) {
-      this.drawFrame(progress);
-    }
-  };
-
   handleDraw = (progress) => {
     this.timeliner.draw(progress);
   };
